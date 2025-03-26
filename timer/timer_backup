@@ -1,0 +1,55 @@
+import board
+import busio
+import displayio
+import adafruit_ili9341
+import fourwire
+import time
+import digitalio
+
+# Clear the pins used by displayio
+#displayio.release_displays()
+
+# Create an SPI object
+spi = busio.SPI(clock=board.GP18, MOSI=board.GP19, MISO=board.GP20)
+
+# Set up the display bus
+cs = board.GP17
+dc = board.GP16
+display_bus = fourwire.FourWire(spi, command=dc, chip_select=cs)
+
+# Initialize display
+display = adafruit_ili9341.ILI9341(display_bus, width=240, height=320)
+
+# Create a bitmap with two colors
+# Setup the file as the bitmap data source
+bitmap0 = displayio.OnDiskBitmap("/image0.bmp")
+bitmap1 = displayio.OnDiskBitmap("/image1.bmp")
+# Create a TileGrid to hold the bitmap
+tile_grid0 = displayio.TileGrid(bitmap0, pixel_shader=bitmap0.pixel_shader)
+tile_grid1 = displayio.TileGrid(bitmap1, pixel_shader=bitmap1.pixel_shader)
+# Create a Group to hold the TileGrid
+group = displayio.Group()
+
+# Add the TileGrid to the Group
+group.append(tile_grid0)
+group.append(tile_grid1)
+
+buzzer_pin = board.GP0
+buzzer =  digitalio.DigitalInOut(buzzer_pin)
+buzzer.direction = digitalio.Direction.OUTPUT
+
+# Add the Group to the Display
+display.root_group = group
+display.rotation = 90
+# Loop forever so you can enjoy your image
+
+    
+    
+    
+
+while True:
+    
+    time.sleep(1)
+    #buzzer.value = True
+    time.sleep(1)
+    buzzer.value = False
